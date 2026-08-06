@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ค้นหา ID Part</title>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+<style>
+body{
+    font-family:Arial,sans-serif;
+    text-align:center;
+    background:#f5f5f5;
+    padding:20px;
+}
+
+h2{
+    color:#333;
+}
+
+input{
+    width:90%;
+    max-width:400px;
+    padding:15px;
+    font-size:20px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button{
+    padding:15px 25px;
+    font-size:18px;
+    margin:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+#reader{
+    width:320px;
+    margin:20px auto;
+}
+
+#result{
+    margin-top:20px;
+    font-size:22px;
+    font-weight:bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>ค้นหา ID Part</h2>
+
+<input
+id="part"
+type="text"
+placeholder="พิมพ์หรือสแกน ID Part">
+
+<br>
+
+<button onclick="searchPart()">🔍 ค้นหา</button>
+
+<button onclick="startScanner()">📷 สแกนบาร์โค้ด</button>
+
+<div id="reader"></div>
+
+<div id="result"></div>
+
+<script>
+
+let scanner = null;
+let scanning = false;
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyKl42Q1A2WMJGNMfkQ6ahVsiMSWfSCup3Xw6lfxNiYkyDtsDVtd95IsSQaV5BS-myGTQ/exec";
+
+async function searchPart(){
+
+    const part=document.getElementById("part").value.trim();
+
+    if(!part){
+
+        document.getElementById("result").innerHTML="กรุณากรอก ID Part";
+        return;
+
+    }
+
+    document.getElementById("result").innerHTML="กำลังค้นหา...";
+
+    try{
+
+        const response=await fetch(API_URL+"?part="+encodeURIComponent(part));
+
+        const res=await response.json();
+
+        if(res.found){
+
+            document.getElementById("result").innerHTML=
+            "✅ พบข้อมูล<br><br>"
+            +"ID Part : "+res.part+"<br>"
+            +"จำนวน : "+res.qty;
+
+        }else{
+
+            document.getElementById("result").innerHTML="❌ ไม่พบข้อมูล";
+
+        }
+
+    }catch(err){
+
+        document.getElementById("result").innerHTML=
+        "❌ เชื่อมต่อไม่ได้<br>"+err;
+
+    }
+
+}async function startScanner() {
+
+    if (scanning) return;
+
+    scanning = true;
+
+    document.getElementById("reader").innerHTML = "";
+
+    scanner = new Html5Qrcode("reader");
+
+    try {
+
+        const cameras = await Html5Qrcode.getCameras();
+
+        if (!cameras || cameras.length === 0) {
+            throw "ไม่พบกล้อง";
+        }
+
+        let cameraId = cameras[0].id;
+
+        // ถ้ามีกล้องหลัง ให้เลือกกล้องหลัง
+        for (let cam of cameras) {
+            if (
+                cam.label.toLowerCase().includes("back") ||
+                cam.label.toLowerCase().includes("rear")
+            ) {
+                cameraId = cam.id;
+                break;
+            }
+        }
+
+        await scanner.start(
+            cameraId,
+            {
+                fps: 10,
+                qrbox: {
+                    width: 250,
+                    height: 250
+                }
+            },
+            async function(decodedText) {
+
+                document.getElementById("part").value = decodedText;
+
+                await scanner.stop();
+
+                document.getElementById("reader").innerHTML = "";
+
+                scanning = false;
+
+                searchPart();
+
+            },
+            function(errorMessage) {
+                // ไม่ต้องแสดง error ทุกเฟรม
+            }
+        );
+
+    } catch (err) {
+
+        scanning = false;
+
+        alert("เปิดกล้องไม่ได้\n\n" + err);
+
+    }
+
+}
+</script>
+
+</body>
+</html>
