@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BEER Cutting ECI - หลังบ้าน</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body{
+    margin:0;
+    padding:20px;
+    background:#f2f2f2;
+    font-family:Arial,sans-serif;
+}
+
+.container{
+    max-width:450px;
+    margin:auto;
+    background:#fff;
+    border-radius:12px;
+    padding:20px;
+    box-shadow:0 0 10px rgba(0,0,0,.15);
+}
+
+h2{
+    text-align:center;
+}
+
+#reader{
+    width:100%;
+}
+
+label{
+    display:block;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+input,select{
+    width:100%;
+    padding:12px;
+    font-size:18px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    margin-top:20px;
+    padding:15px;
+    font-size:20px;
+    background:#0d6efd;
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#0b5ed7;
+}
+
+#partName{
+    background:#eee;
+    font-size:22px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>สแกนสินค้า</h2>
+
+<div id="reader"></div>
+
+<label>ID Part</label>
+<input type="text" id="partName" readonly>
+
+<label>ยอด</label>
+<input type="number" id="qty">
+
+<label>เครื่อง</label>
+
+<select id="machine">
+<option>APU1-C01-A</option>
+<option>APU1-C02-A</option>
+<option>APU1-C03-A</option>
+</select>
+
+<button id="saveBtn">
+บันทึก
+</button>
+
+</div>
+
+<script>
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbwFZadcGRJK1ATdCWg6oulRAbKjOyAzyoOip_e3TNlvi5EfhZrVsx5zpX42A-9q3xLK7A/exec";
+
+let scanner = new Html5Qrcode("reader");
+
+function startScanner(){
+
+    scanner.start(
+        { facingMode:"environment" },
+        {
+            fps:10,
+            qrbox:{ width:250,height:120 }
+        },
+        onScanSuccess
+    );
+
+}
+
+async function onScanSuccess(code){
+
+    scanner.pause();
+
+    try{
+
+        const res = await fetch(
+            GAS_URL + "?part=" + encodeURIComponent(code)
+        );
+
+        const data = await res.json();
+
+        if(data.found){
+
+            document.getElementById("partName").value =
+            data.results[0].part;
+
+            document.getElementById("qty").focus();
+
+        }else{
+
+            alert("ไม่พบข้อมูล");
+
+            scanner.resume();
+
+        }
+
+    }catch(e){
+
+        alert("เชื่อมต่อไม่ได้");
+
+        scanner.resume();
+
+    }
+
+}
+
+startScanner();
+  document.getElementById("saveBtn").onclick = async function(){
+
+    const part =
+    document.getElementById("partName").value;
+
+    const qty =
+    document.getElementById("qty").value;
+
+    const machine =
+    document.getElementById("machine").value;
+
+    if(part=="" || qty==""){
+
+        alert("กรอกยอด");
+
+        return;
+
+    }
+
+    
+try {
+
+    const res = await fetch(GAS_URL,{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            part:part,
+            qty:qty,
+            machine:machine
+        })
+    });
+
+    const result = await res.json();
+
+    if(result.success){
+
+        alert("บันทึกสำเร็จ");
+
+        document.getElementById("partName").value="";
+        document.getElementById("qty").value="";
+        document.getElementById("machine").selectedIndex=0;
+
+        scanner.resume();
+
+    }else{
+
+        alert("บันทึกไม่สำเร็จ");
+
+    }
+
+}catch(err){
+
+    alert("เชื่อมต่อ Apps Script ไม่ได้");
+
+}
+
+};
+
+</script>
+
+</body>
+</html>
