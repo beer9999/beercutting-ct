@@ -7,7 +7,7 @@
 
 <title>ค้นหา ID Part</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@zxing/browser@latest/umd/zxing-browser.min.js"></script>
+<script src="https://unpkg.com/@zxing/browser@latest/umd/index.min.js"></script>
 
 <style>
 
@@ -62,22 +62,17 @@ button{
 
 <body>
 
-<h2>ค้นหา ID Part</h2>
+<h2>ค้นหา TERM ที่ต้องการ</h2>
 
 <input
 id="part"
 type="text"
-placeholder="พิมพ์หรือสแกน ID Part">
+placeholder="พิมพ์รหัส TERM">
 
 <br>
 
 <button onclick="searchPart()">🔍 ค้นหา</button>
 
-<button onclick="startScanner()">📷 สแกนบาร์โค้ด</button>
-
-<div id="reader">
-    <video id="video" autoplay playsinline muted></video>
-</div>
 
 <div id="result"></div>
 
@@ -92,11 +87,11 @@ async function searchPart() {
     const part = document.getElementById("part").value.trim();
 
     if (!part) {
-        document.getElementById("result").innerHTML = "กรุณากรอก ID Part";
+        document.getElementById("result").innerHTML = "กรุณากรอก รหัส TERM";
         return;
     }
 
-    document.getElementById("result").innerHTML = "กำลังค้นหา...";
+    document.getElementById("result").innerHTML = "กำลังค้นหาแป๊บบบ...";
 
     try {
 
@@ -104,16 +99,28 @@ async function searchPart() {
 
         const res = await response.json();
 
+        console.log(res);
+
         if (res.found) {
 
-            document.getElementById("result").innerHTML =
-                "✅ พบข้อมูล<br><br>" +
-                "ID Part : " + res.part + "<br>" +
-                "จำนวน : " + res.qty;
+    let html = "✅ พบ " + res.results.length + " รายการ<br><br>";
 
-        } else {
+    res.results.forEach(function(item) {
 
-            document.getElementById("result").innerHTML = "❌ ไม่พบข้อมูล";
+        html +=
+            "รหัส TERM : " + item.part + "<br>" +
+            "จำนวน : " + item.qty + "<br>" +
+            "เครื่อง : " + item.machine + "<hr>";
+
+    });
+
+    document.getElementById("result").innerHTML = html;
+
+} else {
+
+    document.getElementById("result").innerHTML = "❌ ไม่พบข้อมูล";
+
+
 
         }
 
@@ -183,13 +190,11 @@ async function startScanner() {
 
     } catch (err) {
 
-    scanning = false;
+        scanning = false;
 
-    console.error(err);
+        alert("เปิดกล้องไม่ได้\n\n" + err);
 
-    alert("เปิดกล้องไม่ได้\n\n" + err);
-
-}
+    }
 
 }</script>
 
