@@ -183,11 +183,13 @@ async function startScanner() {
 
     } catch (err) {
 
-        scanning = false;
+    scanning = false;
 
-        alert("เปิดกล้องไม่ได้\n\n" + err);
+    console.error(err);
 
-    }
+    alert("เปิดกล้องไม่ได้\n\n" + err);
+
+}
 
 }</script>
 
