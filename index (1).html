@@ -1,0 +1,12 @@
+<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ค้นหา ID Part</title>
+<script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
+<style>body{font-family:Arial,sans-serif;text-align:center;background:#f5f5f5;padding:20px}input{width:90%;max-width:400px;padding:15px;font-size:20px}button{padding:15px 25px;margin:10px}#reader{width:320px;margin:20px auto}video{width:100%}#result{margin-top:20px;font-size:22px;font-weight:bold}</style></head>
+<body><h2>ค้นหา ID Part</h2><input id="part" placeholder="พิมพ์หรือสแกน ID Part"><br><button onclick="searchPart()">🔍 ค้นหา</button><button onclick="startScanner()">📷 สแกนบาร์โค้ด</button><div id="reader"><video id="video" playsinline></video></div><div id="result"></div>
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbyuPCUtIjmZy0_2YQQGOktYIREvJ-1SU8oP8vvCSpPopzcaMI6K5xXnlo1yuxMDJOY8yw/exec";
+const part=document.getElementById('part'),result=document.getElementById('result');
+let reader,controls,scanning=false;
+async function searchPart(){let p=part.value.trim();if(!p){result.innerHTML='กรุณากรอก ID Part';return;}result.innerHTML='กำลังค้นหา...';try{let r=await fetch(API_URL+'?part='+encodeURIComponent(p));let j=await r.json();result.innerHTML=j.found?`✅ พบข้อมูล<br><br>ID Part : ${j.part}<br>จำนวน : ${j.qty}`:'❌ ไม่พบข้อมูล';}catch(e){result.innerHTML='❌ '+e;}}
+async function startScanner(){if(scanning)return;scanning=true;reader=new ZXing.BrowserBarcodeReader();
+try{controls=await reader.decodeFromVideoDevice(undefined,'video',(res,err,ctrl)=>{if(res){part.value=res.getText();ctrl.stop();scanning=false;searchPart();}});}catch(e){alert('เปิดกล้องไม่ได้\n'+e);scanning=false;}}
+</script></body></html>
