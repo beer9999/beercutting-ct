@@ -102,24 +102,61 @@ button:hover{
 const GAS_URL = "https://script.google.com/macros/s/AKfycbwFZadcGRJK1ATdCWg6oulRAbKjOyAzyoOip_e3TNlvi5EfhZrVsx5zpX42A-9q3xLK7A/exec";
 
 let scanner = new Html5Qrcode("reader");
+let cameraRunning = false;
 
-function startScanner() {
-    scanner.start(
-        { facingMode: "environment" },
-        {
-            fps: 10,
-            qrbox: {
-                width: 250,
-                height: 120
-            }
-        },
-        function(code) {
-            scanner.pause();
+async function startScanner() {
 
-            document.getElementById("partName").value = code;
-            document.getElementById("qty").focus();
-        }
-    );
+    if (cameraRunning) return;
+
+    try {
+
+        await scanner.start(
+            { facingMode: "environment" },
+            {
+                fps: 10,
+                qrbox: {
+                    width: 250,
+                    height: 120
+                }
+            },
+            onScanSuccess
+        );
+
+        cameraRunning = true;
+
+    } catch (error) {
+
+        console.log(error);
+        alert("เปิดกล้องไม่ได้");
+
+    }
+}
+
+async function stopScanner() {
+
+    if (!cameraRunning) return;
+
+    try {
+
+        await scanner.stop();
+        cameraRunning = false;
+
+        console.log("ปิดกล้องแล้ว");
+
+    } catch (error) {
+
+        console.log("ปิดกล้องไม่ได้", error);
+
+    }
+}
+
+async function onScanSuccess(code) {
+
+    await stopScanner();
+
+    document.getElementById("partName").value = code;
+
+    document.getElementById("qty").focus();
 }
 
 startScanner();
@@ -164,21 +201,28 @@ document.getElementById("saveBtn").onclick = async function() {
             document.getElementById("partName").value = "";
             document.getElementById("qty").value = "";
 
-            scanner.resume();
+            startScanner();
 
         } else {
 
             alert("บันทึกไม่สำเร็จ");
 
-            scanner.resume();
+    
         }
 
     } catch (error) {
 
         alert("เชื่อมต่อ Apps Script ไม่ได้");
 
-        scanner.resume();
+      startScanner();
     }
+};
+    document.getElementById("startBtn").onclick = function () {
+    startScanner();
+};
+
+document.getElementById("stopBtn").onclick = function () {
+    stopScanner();
 };
 </script>
 
