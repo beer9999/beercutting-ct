@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ค้นหา ID Part</title>
+
+<script src="https://unpkg.com/@zxing/browser@latest/umd/index.min.js"></script>
+
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#f5f5f5;
+    text-align:center;
+    padding:20px;
+}
+
+h2{
+    color:#333;
+}
+
+input{
+    width:90%;
+    max-width:400px;
+    padding:15px;
+    font-size:20px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+button{
+    padding:15px 25px;
+    font-size:18px;
+    margin:10px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+#reader{
+    width:320px;
+    margin:20px auto;
+}
+
+#video{
+    width:100%;
+    border-radius:10px;
+}
+
+#result{
+    margin-top:20px;
+    font-size:22px;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>ค้นหา TERM ที่ต้องการ</h2>
+
+<input
+id="part"
+type="text"
+placeholder="พิมพ์รหัส TERM">
+
+<br>
+
+<button onclick="searchPart()">🔍 ค้นหา</button>
+
+
+<div id="result"></div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbwFZadcGRJK1ATdCWg6oulRAbKjOyAzyoOip_e3TNlvi5EfhZrVsx5zpX42A-9q3xLK7A/exec";
+
+let codeReader;
+let scanning = false;
+
+async function searchPart() {
+
+    const part = document.getElementById("part").value.trim();
+
+    if (!part) {
+        document.getElementById("result").innerHTML = "กรุณากรอก รหัส TERM";
+        return;
+    }
+
+    document.getElementById("result").innerHTML = "กำลังค้นหาแป๊บบบ...";
+
+    try {
+
+        const response = await fetch(API_URL + "?part=" + encodeURIComponent(part));
+
+        const res = await response.json();
+
+        console.log(res);
+
+        if (res.found) {
+
+    let html = "✅ พบ " + res.results.length + " รายการ<br><br>";
+
+    res.results.forEach(function(item) {
+
+        html +=
+            "รหัส TERM : " + item.part + "<br>" +
+            "จำนวน : " + item.qty + "<br>" +
+            "เครื่อง : " + item.machine + "<hr>";
+
+    });
+
+    document.getElementById("result").innerHTML = html;
+
+} else {
+
+    document.getElementById("result").innerHTML = "❌ ไม่พบข้อมูล";
+
+
+
+        }
+
+    } catch (err) {
+
+        document.getElementById("result").innerHTML =
+            "❌ เชื่อมต่อไม่ได้<br>" + err;
+    }
+    
+    }
+async function startScanner() {
+
+    if (scanning) return;
+
+    scanning = true;
+
+    try {
+
+        codeReader = new ZXing.BrowserMultiFormatReader();
+
+        const devices = await ZXing.BrowserCodeReader.listVideoInputDevices();
+
+        if (!devices.length) {
+            throw "ไม่พบกล้อง";
+        }
+
+        let cameraId = devices[0].deviceId;
+
+        for (const device of devices) {
+
+            const label = device.label.toLowerCase();
+
+            if (
+                label.includes("back") ||
+                label.includes("rear") ||
+                label.includes("environment")
+            ) {
+                cameraId = device.deviceId;
+                break;
+            }
+
+        }
+
+        await codeReader.decodeFromVideoDevice(
+
+            cameraId,
+
+            "video",
+
+            (result, error) => {
+
+                if (result) {
+
+                    document.getElementById("part").value = result.getText();
+
+                    codeReader.reset();
+
+                    scanning = false;
+
+                    searchPart();
+
+                }
+
+            }
+
+        );
+
+    } catch (err) {
+
+        scanning = false;
+
+        alert("เปิดกล้องไม่ได้\n\n" + err);
+
+    }
+
+}</script>
+
+</body>
+</html>
