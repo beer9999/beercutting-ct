@@ -101,121 +101,87 @@ button:hover{
 </div>
 
 <script>
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbwFZadcGRJK1ATdCWg6oulRAbKjOyAzyoOip_e3TNlvi5EfhZrVsx5zpX42A-9q3xLK7A/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwFZadcGRJK1ATdCWg6oulRAbKjOyAzyoOip_e3TNlvi5EfhZrVsx5zpX42A-9q3xLK7A/exec";
 
 let scanner = new Html5Qrcode("reader");
 
-function startScanner(){
-
+function startScanner() {
     scanner.start(
-        { facingMode:"environment" },
+        { facingMode: "environment" },
         {
-            fps:10,
-            qrbox:{ width:250,height:120 }
+            fps: 10,
+            qrbox: {
+                width: 250,
+                height: 120
+            }
         },
-        onScanSuccess
-    );
+        function(code) {
+            scanner.pause();
 
-}
-
-async function onScanSuccess(code){
-
-    scanner.pause();
-
-    try{
-
-        const res = await fetch(
-            GAS_URL + "?part=" + encodeURIComponent(code)
-        );
-
-        const data = await res.json();
-
-        if(data.found){
-
-            document.getElementById("partName").value =
-            data.results[0].part;
-
+            document.getElementById("partName").value = code;
             document.getElementById("qty").focus();
-
-        }else{
-
-            alert("ไม่พบข้อมูล");
-
-            scanner.resume();
-
         }
-
-    }catch(e){
-
-        alert("เชื่อมต่อไม่ได้");
-
-        scanner.resume();
-
-    }
-
+    );
 }
 
 startScanner();
-  document.getElementById("saveBtn").onclick = async function(){
 
-    const part =
-    document.getElementById("partName").value;
+document.getElementById("saveBtn").onclick = async function() {
 
-    const qty =
-    document.getElementById("qty").value;
+    const part = document.getElementById("partName").value.trim();
+    const qty = document.getElementById("qty").value.trim();
+    const machine = document.getElementById("machine").value;
 
-    const machine =
-    document.getElementById("machine").value;
-
-    if(part=="" || qty==""){
-
-        alert("กรอกยอด");
-
+    if (part === "") {
+        alert("กรุณาสแกน ID Part");
         return;
-
     }
 
-    
-try {
+    if (qty === "") {
+        alert("กรุณากรอกยอด");
+        document.getElementById("qty").focus();
+        return;
+    }
 
-    const res = await fetch(GAS_URL,{
-        method:"POST",
-        headers:{
-            "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-            part:part,
-            qty:qty,
-            machine:machine
-        })
-    });
+    try {
 
-    const result = await res.json();
+        const response = await fetch(GAS_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8"
+            },
+            body: JSON.stringify({
+                part: part,
+                qty: qty,
+                machine: machine
+            })
+        });
 
-    if(result.success){
+        const result = await response.json();
 
-        alert("บันทึกสำเร็จ");
+        if (result.success) {
 
-        document.getElementById("partName").value="";
-        document.getElementById("qty").value="";
-        document.getElementById("machine").selectedIndex=0;
+            alert("บันทึกสำเร็จ");
+
+            document.getElementById("partName").value = "";
+            document.getElementById("qty").value = "";
+
+            scanner.resume();
+
+        } else {
+
+            alert("บันทึกไม่สำเร็จ");
+
+            scanner.resume();
+        }
+
+    } catch (error) {
+
+        alert("เชื่อมต่อ Apps Script ไม่ได้");
 
         scanner.resume();
-
-    }else{
-
-        alert("บันทึกไม่สำเร็จ");
-
     }
-
-}catch(err){
-
-    alert("เชื่อมต่อ Apps Script ไม่ได้");
-
-}
-
 };
-
 </script>
 
 </body>
