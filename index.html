@@ -142,71 +142,7 @@ async function searchPart() {
     }
     
     }
-    async function searchPart() {
-
-  const part = document.getElementById("part").value.trim();
-
-  if (!part) {
-    document.getElementById("result").innerHTML = "กรุณากรอกรหัส TERM";
-    return;
-  }
-
-  document.getElementById("result").innerHTML = "🔎 กำลังค้นหาข้อมูล...";
-
-  try {
-
-    const response = await fetch(
-      API_URL + "?part=" + encodeURIComponent(part)
-    );
-
-    const res = await response.json();
-
-    console.log(res);
-
-    if (res.found) {
-
-      let html =
-        "✅ พบ " + res.results.length + " รายการ<br><br>";
-
-      res.results.forEach(function(item) {
-
-        html +=
-          "<div style='border:1px solid #ccc;padding:15px;margin:10px 0;border-radius:10px;'>" +
-
-          "<b>รหัส TERM:</b> " + item.part + "<br>" +
-          "<b>จำนวน:</b> " + item.qty + "<br>" +
-          "<b>เครื่อง:</b> " + item.machine + "<br><br>" +
-
-          "<button onclick=\"borrowPart('" +
-          item.part + "','" +
-          item.qty + "','" +
-          item.machine +
-          "')\" style='background:#28a745;color:white;padding:10px 20px;border:0;border-radius:8px;cursor:pointer;'>" +
-
-          "📦 เบิกไปใช้" +
-
-          "</button>" +
-
-          "</div>";
-
-      });
-
-      document.getElementById("result").innerHTML = html;
-
-    } else {
-
-      document.getElementById("result").innerHTML =
-        "❌ ไม่พบข้อมูล";
-
-    }
-
-  } catch (err) {
-
-    document.getElementById("result").innerHTML =
-      "❌ เชื่อมต่อไม่ได้<br>" + err;
-
-  }
-}
+   
 async function startScanner() {
 
     if (scanning) return;
