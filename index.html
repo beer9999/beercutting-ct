@@ -112,7 +112,7 @@ async function searchPart() {
         "<b>จำนวน :</b> " + item.qty + "<br>" +
         "<b>เครื่อง :</b> " + item.machine + "<br><br>" +
 
-        "<button onclick=\"borrowPart('" +
+        "<button onclick=\"window.borrowPart('" +
         item.part + "','" +
         item.qty + "','" +
         item.machine +
@@ -211,7 +211,7 @@ async function startScanner() {
 
 
 // ตรงนี้วางโค้ดระบบเบิก
-window.borrowPart = async function borrowPart(part, qty, machine) {
+window.borrowPart = window.borrowPart = async function(part, qty, machine) {
 
     const borrower = prompt("กรุณาใส่ชื่อผู้เบิก");
 
@@ -266,12 +266,11 @@ window.borrowPart = async function borrowPart(part, qty, machine) {
 
         alert("❌ เชื่อมต่อ Apps Script ไม่ได้\n\n" + error);
 
-    }
-}
+    }}
 
 
-
-}</script>
+};
+</script>
 
 </body>
 </html>
