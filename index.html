@@ -211,7 +211,7 @@ async function startScanner() {
 
 
 // ตรงนี้วางโค้ดระบบเบิก
-async function borrowPart(part, qty, machine) {
+window.borrowPart = async function borrowPart(part, qty, machine) {
 
     const borrower = prompt("กรุณาใส่ชื่อผู้เบิก");
 
