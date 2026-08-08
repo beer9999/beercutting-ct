@@ -62,12 +62,12 @@ button{
 
 <body>
 
-<h2>ค้นหา สายไฟ / TERM</h2>
+<h2>ค้นหา TERM ที่ต้องการ</h2>
 
 <input
 id="part"
 type="text"
-placeholder="พิมพ์รหัส สายไฟ/TERM">
+placeholder="พิมพ์รหัส TERM">
 
 <br>
 
@@ -105,14 +105,25 @@ async function searchPart() {
 
     let html = "✅ พบ " + res.results.length + " รายการ<br><br>";
 
-    res.results.forEach(function(item) {
+   res.results.forEach(function(item) {
+    html +=
+        "<div style='border:1px solid #ccc; padding:15px; margin:10px 0; border-radius:10px;'>" +
+        "<b>รหัส TERM :</b> " + item.part + "<br>" +
+        "<b>จำนวน :</b> " + item.qty + "<br>" +
+        "<b>เครื่อง :</b> " + item.machine + "<br><br>" +
 
-        html +=
-            "รหัส TERM : " + item.part + "<br>" +
-            "จำนวน : " + item.qty + "<br>" +
-            "เครื่อง : " + item.machine + "<hr>";
+        "<button onclick=\"borrowPart('" +
+        item.part + "','" +
+        item.qty + "','" +
+        item.machine +
+        "')\" style='background:#28a745;color:white;padding:10px 20px;border:0;border-radius:8px;cursor:pointer;'>" +
+        "📦 เบิกไปใช้" +
+        "</button>" +
 
-    });
+        "</div>";
+
+
+});
 
     document.getElementById("result").innerHTML = html;
 
@@ -195,6 +206,75 @@ async function startScanner() {
         alert("เปิดกล้องไม่ได้\n\n" + err);
 
     }
+} catch (err) {
+
+    scanning = false;
+
+    alert("เปิดกล้องไม่ได้\n\n" + err);
+
+}
+
+
+// ตรงนี้วางโค้ดระบบเบิก
+async function borrowPart(part, qty, machine) {
+
+    const borrower = prompt("กรุณาใส่ชื่อผู้เบิก");
+
+    if (borrower === null || borrower.trim() === "") {
+        return;
+    }
+
+    const note = prompt("กรุณาใส่หมายเหตุ");
+
+    if (note === null) {
+        return;
+    }
+
+    if (!confirm(
+        "ยืนยันการเบิก\n\n" +
+        "ID Part: " + part + "\n" +
+        "จำนวน: " + qty + "\n" +
+        "เครื่อง: " + machine + "\n" +
+        "ผู้เบิก: " + borrower + "\n" +
+        "หมายเหตุ: " + note
+    )) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                action: "checkout",
+                part: part,
+                qty: qty,
+                machine: machine,
+                borrower: borrower,
+                note: note
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert("✅ เบิกสำเร็จ");
+            searchPart();
+        } else {
+            alert("❌ เบิกไม่สำเร็จ\n\n" + (result.error || ""));
+        }
+
+    } catch (error) {
+
+        alert("❌ เชื่อมต่อ Apps Script ไม่ได้\n\n" + error);
+
+    }
+}
+
+
 
 }</script>
 
