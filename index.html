@@ -285,8 +285,34 @@ window.borrowPart = async function borrowPart(part, qty, machine) {
 
 
 };
-    window.returnPart = async function(part, qty, machine) {
+    window.returnPartManual = async function() {
 
+    const part = prompt("🔄 คืนของ / ပြန်အပ်ပစ္စည်း\nกรุณาใส่รหัส TERM / TERM အမည်ထည့်ပါ");
+
+    if (part === null || part.trim() === "") {
+        return;
+    }
+
+    const qty = prompt("📦 จำนวนที่คืน / ပြန်အပ်မည့်အရေအတွက်\nกรุณาใส่จำนวนที่ต้องการคืน");
+
+    if (qty === null || qty.trim() === "" || isNaN(qty) || Number(qty) <= 0) {
+        alert("❌ กรุณาใส่จำนวนให้ถูกต้อง");
+        return;
+    }
+
+    const machine = prompt("⚙️ เครื่อง / စက်နံပါတ်\nกรุณาระบุเครื่องที่นำไปใช้");
+
+    if (machine === null || machine.trim() === "") {
+        return;
+    }
+
+    await window.returnPart(
+        part.trim(),
+        Number(qty),
+        machine.trim()
+    );
+};
+window.returnPart = async function(part, qty, machine) {
   const returnQty = prompt(
     "🔄 คืนของ / ပစ္စည်းပြန်အပ်ခြင်း\n" +
     "กรุณาใส่จำนวนที่คืน / ပြန်အပ်မည့် အရေအတွက်ကို ထည့်ပါ"
@@ -343,7 +369,7 @@ window.borrowPart = async function borrowPart(part, qty, machine) {
         action: "return",
         part: part,
         qty: Number(returnQty),
-        machine: note,
+        machine: machine,
         borrower: borrower
       })
     });
