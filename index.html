@@ -113,12 +113,20 @@ window.searchPart = async function searchPart() {
         "<b>เครื่อง :</b> " + item.machine + "<br><br>" +
 
         "<button onclick=\"window.borrowPart('" +
-        item.part + "','" +
-        item.qty + "','" +
-        item.machine +
-        "')\" style='background:#28a745;color:white;padding:10px 20px;border:0;border-radius:8px;cursor:pointer;'>" +
-        "📦 เบิกไปใช้" +
-        "</button>" +
+item.part + "','" +
+item.qty + "','" +
+item.machine +
+"')\" style='background:#28a745;color:white;padding:10px 20px;border:0;border-radius:8px;cursor:pointer;'>" +
+"📦 เบิกไปใช้" +
+"</button>" +
+
+"<button onclick=\"window.returnPart('" +
+item.part + "','" +
+item.qty + "','" +
+item.machine +
+"')\" style='background:#1976d2;color:white;padding:10px 20px;border:0;border-radius:8px;cursor:pointer;margin-left:10px;'>" +
+"🔄 คืนของ" +
+"</button>" +
 
         "</div>";
 
@@ -270,6 +278,90 @@ window.borrowPart = async function borrowPart(part, qty, machine) {
     }
 
 
+};
+    window.returnPart = async function(part, qty, machine) {
+
+  const returnQty = prompt(
+    "🔄 คืนของ / ပစ္စည်းပြန်အပ်ခြင်း\n" +
+    "กรุณาใส่จำนวนที่คืน / ပြန်အပ်မည့် အရေအတွက်ကို ထည့်ပါ"
+  );
+
+  if (returnQty === null) {
+    return;
+  }
+
+  if (returnQty.trim() === "" || isNaN(returnQty) || Number(returnQty) <= 0) {
+    alert(
+      "❌ กรุณาใส่จำนวนที่ถูกต้อง\n" +
+      "မှန်ကန်သော အရေအတွက်ကို ထည့်ပါ"
+    );
+    return;
+  }
+
+  const borrower = prompt(
+    "👤 ผู้คืน / ပစ္စည်းပြန်အပ်သူ\n" +
+    "กรุณาใส่รหัสตัวเอง / မိမိအမည်ကိုထည့်ပါ"
+  );
+
+  if (borrower === null || borrower.trim() === "") {
+    return;
+  }
+
+  const note = prompt(
+    "🏭 เครื่อง / စက်နံပါတ်\n" +
+    "กรุณาระบุเครื่องที่นำไปใช้ / အသုံးပြုမည့် စက်နံပါတ်ကို ထည့်ပါ"
+  );
+
+  if (note === null || note.trim() === "") {
+    return;
+  }
+
+  if (!confirm(
+    "ยืนยันการคืนของ / ပစ္စည်းပြန်အပ်ခြင်းကို အတည်ပြုပါ\n\n" +
+    "ID Part: " + part + "\n" +
+    "จำนวนคืน: " + returnQty + "\n" +
+    "เครื่อง: " + note + "\n" +
+    "ผู้คืน: " + borrower
+  )) {
+    return;
+  }
+
+  try {
+
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        action: "return",
+        part: part,
+        qty: Number(returnQty),
+        machine: note,
+        borrower: borrower
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert("✅ คืนของสำเร็จ / ပစ္စည်းပြန်အပ်ပြီးပါပြီ");
+      searchPart();
+    } else {
+      alert(
+        "❌ Apps Script ตอบกลับ:\n\n" +
+        JSON.stringify(result, null, 2)
+      );
+    }
+
+  } catch (error) {
+
+    alert(
+      "❌ เชื่อมต่อ Apps Script ไม่ได้\n\n" +
+      error
+    );
+
+  }
 };
 </script>
 
