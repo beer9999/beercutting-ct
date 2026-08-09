@@ -240,16 +240,20 @@ window.borrowPart = async function borrowPart(part, qty, machine) {
 
     try {
 
-        const response = await fetch(
-    API_URL +
-    "?action=checkout" +
-    "&part=" + encodeURIComponent(part) +
-    "&qty=" + encodeURIComponent(qty) +
-    "&machine=" + encodeURIComponent(machine) +
-    "&borrower=" + encodeURIComponent(borrower) +
-    "&note=" + encodeURIComponent(note)
-);
-
+    const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        action: "checkout",
+        part: part,
+        qty: qty,
+        machine: machine,
+        borrower: borrower,
+        note: note
+    })
+});
         const result = await response.json();
 
         if (result.success) {
