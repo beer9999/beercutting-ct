@@ -82,7 +82,7 @@ placeholder="พิมพ์รหัส TERM">
 let codeReader;
 let scanning = false;
 
-async function searchPart() {
+window.searchPart = async function searchPart() {
 
     const part = document.getElementById("part").value.trim();
 
@@ -211,7 +211,7 @@ async function startScanner() {
 
 
 // ตรงนี้วางโค้ดระบบเบิก
-window.borrowPart = window.borrowPart = async function(part, qty, machine) {
+window.borrowPart = async function borrowPart(part, qty, machine) {
 
     const borrower = prompt("กรุณาใส่ชื่อผู้เบิก");
 
@@ -269,7 +269,7 @@ window.borrowPart = window.borrowPart = async function(part, qty, machine) {
     }
 
 
-}
+};
 </script>
 
 </body>
