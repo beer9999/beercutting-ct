@@ -370,33 +370,6 @@ window.returnPart = async function(part, qty, machine) {
     }
 };
     
-  try {
-
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify({
-        action: "return",
-        part: part,
-        qty: Number(returnQty),
-        machine: machine,
-        borrower: borrower
-      })
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      alert("✅ คืนของสำเร็จ / ပစ္စည်းပြန်အပ်ပြီးပါပြီ");
-      searchPart();
-    } else {
-      alert(
-        "❌ Apps Script ตอบกลับ:\n\n" +
-        JSON.stringify(result, null, 2)
-      );
-    }
 
   } catch (error) {
 
