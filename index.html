@@ -256,7 +256,7 @@ window.borrowPart = async function borrowPart(part, qty, machine) {
             alert("✅ เบิกสำเร็จ");
             searchPart();
         } else {
-            alert("❌ เบิกไม่สำเร็จ\n\n" + (result.error || ""));
+    alert("❌ Apps Script ตอบกลับ:\n\n" + JSON.stringify(result, null, 2));
         }
 
     } catch (error) {
