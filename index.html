@@ -215,13 +215,13 @@ async function startScanner() {
 // ตรงนี้วางโค้ดระบบเบิก
 window.borrowPart = async function borrowPart(part, qty, machine) {
 
-    const borrower = prompt("กรุณาใส่ชื่อผู้เบิก");
+    const borrower = prompt("กรุณาใส่รหัสตัวเอง / မိမိဝန်ထမ်းကုဒ်ကို ထည့်ပါ");
 
     if (borrower === null || borrower.trim() === "") {
         return;
     }
 
-    const note = prompt("กรุณาใส่หมายเหตุ");
+    const note = prompt("เครื่อง / စက်နံပါတ်\nกรุณาใส่หมายเลขเครื่อง / စက်နံပါတ်ကို ထည့်ပါ");
 
     if (note === null) {
         return;
