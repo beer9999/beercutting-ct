@@ -113,10 +113,10 @@ window.searchPart = async function searchPart() {
 
    res.results.forEach(function(item) {
     html +=
-        "<div style='border:1px solid #ccc; padding:15px; margin:10px 0; border-radius:10px;'>" +
-        "<b>รหัส/ID :</b> " + item.part + "<br>" +
-        "<b>คงเหลือ/လက်ကျန်အရေအတွက်/:</b> " + item.qty + "<br>" +
-        "<b>สถานะ/အခြေအနေ:</b> " + item.machine + "<br><br>" +
+    "<div style='border:1px solid #ccc; padding:15px; margin:10px 0; border-radius:10px;'>" +
+    "<b style='display:inline-block;width:100px;'>รหัส / ကုဒ် :</b> " + item.part + "<br>" +
+    "<b style='display:inline-block;width:100px;'>คงเหลือ / လက်ကျန် :</b> " + item.qty + "<br>" +
+    "<b style='display:inline-block;width:100px;'>สถานะ / အခြေအနေ :</b> " + item.machine + "<br><br>" +
 
         "<button onclick=\"window.borrowPart('" +
 item.part + "','" +
