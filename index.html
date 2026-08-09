@@ -114,8 +114,8 @@ window.searchPart = async function searchPart() {
    res.results.forEach(function(item) {
     html +=
         "<div style='border:1px solid #ccc; padding:15px; margin:10px 0; border-radius:10px;'>" +
-        "<b>รหัส TERM :</b> " + item.part + "<br>" +
-        "<b>จำนวน :</b> " + item.qty + "<br>" +
+        "<b>รหัส/ID :</b> " + item.part + "<br>" +
+        "<b>จำนวน/PCS :</b> " + item.qty + "<br>" +
         "<b>เครื่อง :</b> " + item.machine + "<br><br>" +
 
         "<button onclick=\"window.borrowPart('" +
