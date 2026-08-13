@@ -293,7 +293,7 @@ window.borrowPart = async function borrowPart(part, qty, machine) {
 };
     window.returnPartManual = async function() {
 
-    const part = prompt("🔄 คืนของ / ပြန်အပ်ပစ္စည်း\nกรุณาใส่รหัส TERM / TERM အမည်ထည့်ပါ");
+    const part = prompt("🔄 คืนของ / ပြန်အပ်ပစ္စည်း\nกรุณาใส่ชื่อเต็มของ TERM / TERM အမည်အပြည့်အစုံကို ရိုက်ထည့်ပါ");
 
     if (part === null || part.trim() === "") {
         return;
