@@ -71,7 +71,7 @@ placeholder="พิมพ์รหัส TERM/TERM ကုဒ်ရိုက်�
 
 <br>
 
-<button onclick="searchPart()">🔎 ค้นหา/ရှာဖွေမည်</button>
+<button id="searchButton" onclick="searchPart()">🔎 ค้นหา/...</button>
 
 <br><br>
 
@@ -91,10 +91,18 @@ let scanning = false;
 window.searchPart = async function searchPart() {
 
     const part = document.getElementById("part").value.trim();
+    
+    const searchButton = document.getElementById("searchButton");
+
+searchButton.disabled = true;
+searchButton.textContent = "🔄 กำลังค้นหา...";
+document.getElementById("result").innerHTML = "⏳ กำลังค้นหา กรุณารอสักครู่...";
 
     if (!part) {
-        document.getElementById("result").innerHTML = "กรุณากรอก รหัส TERM";
-        return;
+    document.getElementById("result").innerHTML = "กรุณากรอก รหัส TERM";
+    searchButton.disabled = false;
+    searchButton.textContent = "🔎 ค้นหา/...";
+    return;
     }
 
     document.getElementById("result").innerHTML = "กำลังค้นหาแป๊บบบ...";
@@ -143,11 +151,17 @@ item.machine +
 
     } catch (err) {
 
-        document.getElementById("result").innerHTML =
-            "❌ เชื่อมต่อไม่ได้<br>" + err;
-    }
-    
-    }
+  document.getElementById("result").innerHTML =
+    "❌ เชื่อมต่อไม่ได้<br>" + err;
+
+} finally {
+
+  // คืนปุ่มหลังค้นหาเสร็จ
+  searchButton.disabled = false;
+  searchButton.textContent = "🔎 ค้นหา/...";
+}
+
+}
    
 async function startScanner() {
 
