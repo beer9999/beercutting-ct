@@ -71,7 +71,7 @@ placeholder="พิมพ์รหัส TERM/TERM ကုဒ်ရိုက်�
 
 <br>
 
-<button id="searchButton" onclick="searchPart()">🔎 ค้นหา/...</button>
+<button id="searchButton" onclick="searchPart()">🔎 ค้นหา</button>
 
 <br><br>
 
@@ -95,13 +95,13 @@ window.searchPart = async function searchPart() {
     const searchButton = document.getElementById("searchButton");
 
 searchButton.disabled = true;
-searchButton.textContent = "🔄 กำลังค้นหา...";
+searchButton.textContent = "🔄กำลังค้นหา/ရှာဖွေနေသည်";
 document.getElementById("result").innerHTML = "⏳ กำลังค้นหา กรุณารอสักครู่...";
 
     if (!part) {
     document.getElementById("result").innerHTML = "กรุณากรอก รหัส TERM";
     searchButton.disabled = false;
-    searchButton.textContent = "🔎 ค้นหา/...";
+    searchButton.textContent = "🔎 ค้นหา/ရှာဖွေပါ";
     return;
     }
 
